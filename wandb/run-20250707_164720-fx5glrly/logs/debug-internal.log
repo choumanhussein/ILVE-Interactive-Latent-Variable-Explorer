@@ -1,0 +1,16 @@
+{"time":"2025-07-07T16:47:20.755803908+09:00","level":"INFO","msg":"stream: starting","core version":"0.20.1","symlink path":"/home/c-hussein/continuous_latent/wandb/run-20250707_164720-fx5glrly/logs/debug-core.log"}
+{"time":"2025-07-07T16:47:21.072685174+09:00","level":"INFO","msg":"stream: created new stream","id":"fx5glrly"}
+{"time":"2025-07-07T16:47:21.072790844+09:00","level":"INFO","msg":"stream: started","id":"fx5glrly"}
+{"time":"2025-07-07T16:47:21.072898443+09:00","level":"INFO","msg":"sender: started","stream_id":"fx5glrly"}
+{"time":"2025-07-07T16:47:21.072921535+09:00","level":"INFO","msg":"handler: started","stream_id":"fx5glrly"}
+{"time":"2025-07-07T16:47:21.072903502+09:00","level":"INFO","msg":"writer: Do: started","stream_id":"fx5glrly"}
+{"time":"2025-07-07T16:47:21.325791087+09:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-07-07T16:49:38.414916147+09:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-07-07T16:49:38.414958046+09:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-07-07T16:49:39.211268463+09:00","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2025-07-07T16:49:39.41851849+09:00","level":"INFO","msg":"handler: operation stats","stats":{"operations":[{"desc":"uploading history steps 126-127, summary, console lines 123-135","runtime_seconds":0.206554155}],"total_operations":1}}
+{"time":"2025-07-07T16:49:39.50722538+09:00","level":"INFO","msg":"stream: closing","id":"fx5glrly"}
+{"time":"2025-07-07T16:49:39.507232002+09:00","level":"INFO","msg":"handler: closed","stream_id":"fx5glrly"}
+{"time":"2025-07-07T16:49:39.507236344+09:00","level":"INFO","msg":"writer: Close: closed","stream_id":"fx5glrly"}
+{"time":"2025-07-07T16:49:39.507257273+09:00","level":"INFO","msg":"sender: closed","stream_id":"fx5glrly"}
+{"time":"2025-07-07T16:49:39.507274189+09:00","level":"INFO","msg":"stream: closed","id":"fx5glrly"}

@@ -1,0 +1,39 @@
+# Base configuration for VAE experiments
+project:
+  name: "continuous-latent-vae"
+  description: "Understanding continuous latent variables through VAE"
+
+data:
+  dataset: "mnist"
+  batch_size: 128
+  num_workers: 0 
+  pin_memory: false 
+
+model:
+  input_dim: 784 # 28*28 for MNIST
+  hidden_dims: [512, 256]
+  latent_dim: 2 
+  activation: "relu"
+
+training:
+  epochs: 100
+  learning_rate: 0.001 
+  optimizer: "adam"
+  scheduler: "reduce_on_plateau"
+  patience: 10
+
+loss:
+  reconstruction_loss: "mse"
+  kl_weight: 1.0
+  beta: 1.0 
+
+logging:
+  log_interval: 100
+  save_interval: 10
+  wandb_project: "continuous-latent-vae"
+
+paths:
+  data_dir: "./data"
+  checkpoint_dir: "./experiments/checkpoints"
+  log_dir: "./experiments/logs"
+  results_dir: "./experiments/results"

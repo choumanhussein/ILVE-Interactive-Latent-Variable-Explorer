@@ -1,0 +1,130 @@
+Starting training for 25 epochs...
+Model parameters: 1,068,820
+Training on: cuda
+Epoch 0: 100%|██████████████████████████████████████████████████████████████████████| 390/390 [00:04<00:00, 83.78it/s, Loss=163.2526, Recon=158.5762, KL=4.6763]
+Epoch 0/24
+  Train Loss: 187.8541 (Recon: 184.1327, KL: 3.7214)
+  Val Loss:   164.1052 (Recon: 159.2433, KL: 4.8619)
+✓ New best model saved with val_loss: 164.1052
+Epoch 1: 100%|██████████████████████████████████████████████████████████████████████| 390/390 [00:04<00:00, 89.09it/s, Loss=165.5527, Recon=159.9626, KL=5.5900]
+Epoch 1/24
+  Train Loss: 163.8422 (Recon: 158.5633, KL: 5.2789)
+  Val Loss:   157.0864 (Recon: 151.4688, KL: 5.6176)
+✓ New best model saved with val_loss: 157.0864
+Epoch 2: 100%|██████████████████████████████████████████████████████████████████████| 390/390 [00:04<00:00, 88.24it/s, Loss=164.3537, Recon=158.7888, KL=5.5648]
+Epoch 2/24
+  Train Loss: 159.2887 (Recon: 153.6606, KL: 5.6281)
+  Val Loss:   154.3082 (Recon: 148.4711, KL: 5.8370)
+✓ New best model saved with val_loss: 154.3082
+Epoch 3: 100%|██████████████████████████████████████████████████████████████████████| 390/390 [00:04<00:00, 85.13it/s, Loss=152.6619, Recon=146.8549, KL=5.8070]
+Epoch 3/24
+  Train Loss: 156.7788 (Recon: 150.9641, KL: 5.8147)
+  Val Loss:   152.1175 (Recon: 146.3766, KL: 5.7409)
+✓ New best model saved with val_loss: 152.1175
+Epoch 4: 100%|██████████████████████████████████████████████████████████████████████| 390/390 [00:04<00:00, 83.32it/s, Loss=156.7380, Recon=151.0623, KL=5.6756]
+Epoch 4/24
+  Train Loss: 155.2397 (Recon: 149.2648, KL: 5.9750)
+  Val Loss:   150.8342 (Recon: 145.1048, KL: 5.7294)
+✓ New best model saved with val_loss: 150.8342
+Epoch 5: 100%|█| 390/390 [00:04<00:00, 85.28it/s, Loss=155.7004, Recon=149.
+Epoch 5/24
+  Train Loss: 153.9183 (Recon: 147.8302, KL: 6.0881)
+  Val Loss:   149.5904 (Recon: 143.4465, KL: 6.1439)
+✓ New best model saved with val_loss: 149.5904
+Epoch 6: 100%|█| 390/390 [00:04<00:00, 89.22it/s, Loss=161.6289, Recon=155.
+Epoch 6/24
+  Train Loss: 152.8374 (Recon: 146.6559, KL: 6.1815)
+  Val Loss:   148.8991 (Recon: 142.7974, KL: 6.1017)
+✓ New best model saved with val_loss: 148.8991
+Epoch 7: 100%|█| 390/390 [00:04<00:00, 89.40it/s, Loss=157.2894, Recon=150.
+Epoch 7/24
+  Train Loss: 152.1228 (Recon: 145.8715, KL: 6.2513)
+  Val Loss:   148.0692 (Recon: 141.8986, KL: 6.1706)
+✓ New best model saved with val_loss: 148.0692
+Epoch 8: 100%|█| 390/390 [00:04<00:00, 89.58it/s, Loss=144.8671, Recon=138.
+Epoch 8/24
+  Train Loss: 151.4201 (Recon: 145.0851, KL: 6.3350)
+  Val Loss:   146.9356 (Recon: 140.7196, KL: 6.2160)
+✓ New best model saved with val_loss: 146.9356
+Epoch 9: 100%|█| 390/390 [00:04<00:00, 88.65it/s, Loss=149.5108, Recon=143.
+Epoch 9/24
+  Train Loss: 150.8037 (Recon: 144.4044, KL: 6.3993)
+  Val Loss:   146.4540 (Recon: 140.3200, KL: 6.1339)
+✓ New best model saved with val_loss: 146.4540
+Epoch 10: 100%|█| 390/390 [00:04<00:00, 87.54it/s, Loss=144.6248, Recon=138
+Epoch 10/24
+  Train Loss: 150.2449 (Recon: 143.8071, KL: 6.4378)
+  Val Loss:   146.1552 (Recon: 140.0295, KL: 6.1257)
+✓ New best model saved with val_loss: 146.1552
+Epoch 11: 100%|█| 390/390 [00:04<00:00, 84.87it/s, Loss=155.9398, Recon=149
+Epoch 11/24
+  Train Loss: 150.0730 (Recon: 143.5655, KL: 6.5075)
+  Val Loss:   145.9524 (Recon: 139.4949, KL: 6.4575)
+✓ New best model saved with val_loss: 145.9524
+Epoch 12: 100%|█| 390/390 [00:04<00:00, 82.80it/s, Loss=146.4977, Recon=140
+Epoch 12/24
+  Train Loss: 149.6765 (Recon: 143.1133, KL: 6.5632)
+  Val Loss:   145.2082 (Recon: 138.8598, KL: 6.3484)
+✓ New best model saved with val_loss: 145.2082
+Epoch 13: 100%|█| 390/390 [00:04<00:00, 86.58it/s, Loss=145.3953, Recon=139
+Epoch 13/24
+  Train Loss: 149.1984 (Recon: 142.6392, KL: 6.5593)
+  Val Loss:   144.9759 (Recon: 138.6316, KL: 6.3444)
+✓ New best model saved with val_loss: 144.9759
+Epoch 14: 100%|█| 390/390 [00:04<00:00, 86.01it/s, Loss=149.2222, Recon=142
+Epoch 14/24
+  Train Loss: 148.8846 (Recon: 142.2550, KL: 6.6296)
+  Val Loss:   145.6814 (Recon: 139.2537, KL: 6.4276)
+Epoch 15: 100%|█| 390/390 [00:04<00:00, 87.09it/s, Loss=153.4551, Recon=146
+Epoch 15/24
+  Train Loss: 148.8198 (Recon: 142.1543, KL: 6.6655)
+  Val Loss:   144.5840 (Recon: 137.8340, KL: 6.7501)
+✓ New best model saved with val_loss: 144.5840
+Epoch 16: 100%|█| 390/390 [00:04<00:00, 86.83it/s, Loss=143.7991, Recon=137
+Epoch 16/24
+  Train Loss: 148.4139 (Recon: 141.7302, KL: 6.6837)
+  Val Loss:   144.2878 (Recon: 137.6017, KL: 6.6861)
+✓ New best model saved with val_loss: 144.2878
+Epoch 17: 100%|█| 390/390 [00:04<00:00, 84.63it/s, Loss=150.1016, Recon=143
+Epoch 17/24
+  Train Loss: 148.1765 (Recon: 141.4798, KL: 6.6967)
+  Val Loss:   144.2759 (Recon: 137.6325, KL: 6.6434)
+✓ New best model saved with val_loss: 144.2759
+Epoch 18: 100%|█| 390/390 [00:04<00:00, 85.51it/s, Loss=150.3935, Recon=143
+Epoch 18/24
+  Train Loss: 148.0217 (Recon: 141.3461, KL: 6.6756)
+  Val Loss:   143.7637 (Recon: 137.0983, KL: 6.6654)
+✓ New best model saved with val_loss: 143.7637
+Epoch 19: 100%|█| 390/390 [00:04<00:00, 86.70it/s, Loss=147.9073, Recon=141
+Epoch 19/24
+  Train Loss: 147.9736 (Recon: 141.2174, KL: 6.7562)
+  Val Loss:   144.1380 (Recon: 137.5377, KL: 6.6003)
+Epoch 20: 100%|█| 390/390 [00:04<00:00, 87.72it/s, Loss=146.2143, Recon=139
+Epoch 20/24
+  Train Loss: 147.7268 (Recon: 140.9764, KL: 6.7504)
+  Val Loss:   143.5781 (Recon: 136.8462, KL: 6.7319)
+✓ New best model saved with val_loss: 143.5781
+Epoch 21: 100%|█| 390/390 [00:04<00:00, 87.13it/s, Loss=148.6338, Recon=141
+Epoch 21/24
+  Train Loss: 147.5335 (Recon: 140.7612, KL: 6.7723)
+  Val Loss:   143.9082 (Recon: 137.3142, KL: 6.5940)
+Epoch 22: 100%|█████████████████████████████████████████████████████| 390/390 [00:04<00:00, 83.66it/s, Loss=144.4576, Recon=137.5294, KL=6.9282]
+Epoch 22/24
+  Train Loss: 147.2453 (Recon: 140.4677, KL: 6.7776)
+  Val Loss:   143.3229 (Recon: 136.7140, KL: 6.6089)
+✓ New best model saved with val_loss: 143.3229
+Epoch 23: 100%|█████████████████████████████████████████████████████| 390/390 [00:04<00:00, 84.04it/s, Loss=147.4986, Recon=140.6953, KL=6.8034]
+Epoch 23/24
+  Train Loss: 147.1990 (Recon: 140.4156, KL: 6.7834)
+  Val Loss:   143.2926 (Recon: 136.6382, KL: 6.6544)
+✓ New best model saved with val_loss: 143.2926
+Epoch 24: 100%|█████████████████████████████████████████████████████| 390/390 [00:04<00:00, 84.03it/s, Loss=145.4294, Recon=138.5271, KL=6.9023]
+Epoch 24/24
+  Train Loss: 146.9495 (Recon: 140.1604, KL: 6.7892)
+  Val Loss:   143.4134 (Recon: 136.8722, KL: 6.5412)
+
+✓ Training completed in 2.3 minutes
+Best validation loss: 143.2926
+✓ Training completed for β = 1.0
+  Best validation loss: 143.2926
+✓ Saved model to experiments/checkpoints/beta_vae_1.0.pth
