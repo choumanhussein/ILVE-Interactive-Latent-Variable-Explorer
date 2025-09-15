@@ -246,7 +246,7 @@ def add_real_beta_comparison_to_page(current_model, current_beta: float, state_m
     if model_loader is None:
         if not hasattr(st.session_state, 'model_loader_instance'):
             st.session_state.model_loader_instance = ModelLoader()
-        
+        model_loader = st.session_state.model_loader_instance
     
     render_multi_beta_comparison_section(current_model, current_beta, model_loader)
 
@@ -405,11 +405,6 @@ def render_same_sample_comparison(beta_models: Dict, available_betas: List, curr
                 current_model, model_loader, seed, latent_strength
             )
 
-
-
-
-
-
 def load_models_with_minimal_output(beta_models: Dict, available_betas: List, current_beta: float, current_model, model_loader):
     """Load models with minimal UI output - just show which ones succeeded."""
     loaded_models = {}
@@ -505,9 +500,9 @@ def generate_separate_samples_comparison(loaded_models: Dict, model_latent_dims:
         
         with cols[i]:
             try:
-                
+                # Use model-specific latent dimension
                 torch.manual_seed(seed + int(beta * 10)) 
-                latent_code = torch.randn(1, latent_dim) * strength
+                latent_code = torch.randn(1, latent_dim) * strength  # Use correct latent_dim
                 
                 with torch.no_grad():
                     model.eval()
@@ -525,7 +520,7 @@ def generate_separate_samples_comparison(loaded_models: Dict, model_latent_dims:
                 
 
                 if abs(beta - current_beta) < 0.01:
-                    st.markdown("** Your Selected Model**")
+                    st.markdown("**Your Selected Model**")
                 
 
                 organization_score = min(beta * 15, 95)
@@ -570,6 +565,11 @@ def generate_same_latent_comparison(loaded_models: Dict, latent_code: torch.Tens
         
         with cols[i]:
             try:
+                # Verify latent code dimension matches model
+                if latent_code.size(1) != model.latent_dim:
+                    st.error(f"Dimension mismatch: latent_code has {latent_code.size(1)} dims, model expects {model.latent_dim}")
+                    continue
+                    
                 with torch.no_grad():
                     model.eval()
                     generated_img = model.decode(latent_code)
@@ -719,27 +719,29 @@ def generate_real_traversal_comparison(beta_models: Dict, available_betas: List,
                                      current_model, model_loader, dimension: int, traversal_range: float, num_steps: int):
     """Generate traversal comparison using your actual models."""
     
-
-    latent_dim = current_model.latent_dim
+    # Load all models
+    loaded_models, model_latent_dims = load_models_with_minimal_output(
+        beta_models, available_betas, current_beta, current_model, model_loader
+    )
+    
     traversal_values = np.linspace(-traversal_range, traversal_range, num_steps)
     
-
-    loaded_models, _ = load_models_with_minimal_output(beta_models, available_betas, current_beta, current_model, model_loader)
-    
-
+    # Generate traversal for each model
     for beta in sorted(loaded_models.keys()):
         model = loaded_models[beta]
+        model_latent_dim = model_latent_dims[beta]
         
         st.markdown(f"#### β = {beta} {'👈 Your Model' if abs(beta - current_beta) < 0.01 else ''}")
         
         images = []
         
         for val in traversal_values:
-            latent = torch.zeros(1, model.latent_dim) 
+            # Create latent tensor with correct dimension for this model
+            latent = torch.zeros(1, model_latent_dim)
             
-
-            if dimension >= model.latent_dim:
-                st.warning(f"⚠️ Dimension {dimension} doesn't exist in β={beta} model (has {model.latent_dim} dims). Using dimension 0 instead.")
+            # Check if requested dimension exists in this model
+            if dimension >= model_latent_dim:
+                st.warning(f"⚠️ Dimension {dimension} doesn't exist in β={beta} model (has {model_latent_dim} dims). Using dimension 0 instead.")
                 actual_dim = 0
             else:
                 actual_dim = dimension
@@ -753,7 +755,7 @@ def generate_real_traversal_comparison(beta_models: Dict, available_betas: List,
                 try:
                     img_array = process_model_output(img)
                     
-
+                    # Validate processed image
                     if len(img_array.shape) not in [2, 3]:
                         st.error(f"❌ β={beta}, val={val:.1f}: Processed shape {img_array.shape} is invalid")
                         continue
@@ -762,11 +764,11 @@ def generate_real_traversal_comparison(beta_models: Dict, available_betas: List,
                     
                 except Exception as e:
                     st.error(f"❌ β={beta}, val={val:.1f}: Processing failed - {str(e)}")
-
+                    # Add placeholder to maintain consistent array length
                     placeholder = np.zeros((28, 28))
                     images.append(placeholder)
         
-
+        # Display images in columns
         if images and len(images) == num_steps:
             cols = st.columns(num_steps)
             for i, (img, val) in enumerate(zip(images, traversal_values)):
@@ -779,7 +781,7 @@ def generate_real_traversal_comparison(beta_models: Dict, available_betas: List,
         else:
             st.error(f"❌ Could not generate valid images for β={beta}")
         
-
+        # Calculate smoothness score
         if len(images) >= 2:
             try:
                 smoothness = calculate_traversal_smoothness(images)
@@ -802,7 +804,6 @@ def render_quality_analysis_comparison(beta_models: Dict, available_betas: List,
     """Analyze quality differences across your models."""
     st.markdown("##### 📊 Model Quality Analysis")
     
-
     with st.container():
         st.markdown("**Ready to analyze all your β-VAE models?**")
         st.markdown(
@@ -819,56 +820,73 @@ def render_quality_analysis_comparison(beta_models: Dict, available_betas: List,
 
 def analyze_all_models_quality(beta_models: Dict, available_betas: List, current_beta: float,
                               current_model, model_loader):
-    """Comprehensive quality analysis of all models."""
+    """Comprehensive quality analysis of all models """
     
-
-    loaded_models, _ = load_models_with_minimal_output(beta_models, available_betas, current_beta, current_model, model_loader)
+    # Load all models and get their latent dimensions
+    loaded_models, model_latent_dims = load_models_with_minimal_output(
+        beta_models, available_betas, current_beta, current_model, model_loader
+    )
     
-
     num_samples = 10
     all_results = {beta: {'quality': [], 'sharpness': [], 'variance': []} for beta in loaded_models.keys()}
     
     progress_bar = st.progress(0)
     
     for sample_idx in range(num_samples):
-        torch.manual_seed(sample_idx + 100)  
-        latent_code = torch.randn(1, current_model.latent_dim)
+        # Set seed for reproducible sampling
+        torch.manual_seed(sample_idx + 100)
         
         for beta, model in loaded_models.items():
-            with torch.no_grad():
-                model.eval()
-                img = model.decode(latent_code)
-                
-                if isinstance(img, torch.Tensor):
-                    img_array = img.cpu().numpy().squeeze()
-                    if len(img_array.shape) == 3 and img_array.shape[0] in [1, 3]:
-                        img_array = np.transpose(img_array, (1, 2, 0))
-                    if len(img_array.shape) == 3 and img_array.shape[-1] == 1:
-                        img_array = img_array.squeeze(-1)
-                    if img_array.max() > 1.0 or img_array.min() < 0.0:
-                        img_array = np.clip((img_array - img_array.min()) / (img_array.max() - img_array.min()), 0, 1)
+            model_latent_dim = model_latent_dims[beta]
+            
+            # Create latent code with the correct dimension for THIS model
+            latent_code = torch.randn(1, model_latent_dim)
+            
+            try:
+                with torch.no_grad():
+                    model.eval()
+                    img = model.decode(latent_code)
                     
+                    # Process the image
+                    img_array = process_model_output(img)
+                    
+                    # Calculate metrics
                     all_results[beta]['quality'].append(calculate_image_quality(img_array))
                     all_results[beta]['sharpness'].append(calculate_image_sharpness(img_array))
                     all_results[beta]['variance'].append(np.var(img_array))
+                    
+            except Exception as e:
+                st.error(f"Error processing β={beta}, sample {sample_idx}: {str(e)}")
+                # Add default values to maintain consistent list lengths
+                all_results[beta]['quality'].append(0.0)
+                all_results[beta]['sharpness'].append(0.0)
+                all_results[beta]['variance'].append(0.0)
         
         progress_bar.progress((sample_idx + 1) / num_samples)
 
-    render_comprehensive_quality_plot(all_results, current_beta)
+    # Only render the plot if we have valid results
+    valid_results = {beta: results for beta, results in all_results.items() 
+                     if len(results['quality']) > 0 and any(q > 0 for q in results['quality'])}
+    
+    if len(valid_results) >= 2:
+        render_comprehensive_quality_plot(valid_results, current_beta)
+    else:
+        st.warning("Could not generate enough valid results for comparison.")
+        st.info(f"Results obtained: {list(valid_results.keys())}")
 
 def render_comprehensive_quality_plot(results: Dict, current_beta: float):
     """Create comprehensive quality comparison plot."""
     
     betas = sorted(results.keys())
     
-
+    # Calculate means and standard deviations
     quality_means = [np.mean(results[beta]['quality']) for beta in betas]
     quality_stds = [np.std(results[beta]['quality']) for beta in betas]
     sharpness_means = [np.mean(results[beta]['sharpness']) for beta in betas]
     
     fig = go.Figure()
     
-
+    # Add quality trace with error bars
     fig.add_trace(go.Scatter(
         x=betas,
         y=quality_means,
@@ -889,7 +907,7 @@ def render_comprehensive_quality_plot(results: Dict, current_beta: float):
         yaxis='y2'
     ))
     
-
+    # Highlight current model
     current_quality = np.mean(results[current_beta]['quality'])
     current_sharpness = np.mean(results[current_beta]['sharpness'])
     
@@ -928,13 +946,13 @@ def render_comprehensive_quality_plot(results: Dict, current_beta: float):
 
 def calculate_image_quality(image: np.ndarray) -> float:
     """Calculate image quality score."""
-
+    # Contrast measurement
     contrast = np.std(image)
     
-
+    # Dynamic range
     dynamic_range = np.max(image) - np.min(image)
     
-
+    # Edge strength (sharpness indicator)
     if len(image.shape) == 2:
         edges = np.gradient(image)
         edge_strength = np.mean(np.sqrt(edges[0]**2 + edges[1]**2))
@@ -943,54 +961,54 @@ def calculate_image_quality(image: np.ndarray) -> float:
         edges = np.gradient(gray)
         edge_strength = np.mean(np.sqrt(edges[0]**2 + edges[1]**2))
     
-
+    # Composite quality score
     quality = contrast * 30 + dynamic_range * 40 + edge_strength * 100
     return min(quality, 100)
 
 def calculate_image_sharpness(image: np.ndarray) -> float:
     """Calculate image sharpness using Laplacian variance."""
     try:
-
+        # Convert to grayscale if needed
         if len(image.shape) == 3:
-            if image.shape[-1] == 3:  
+            if image.shape[-1] == 3:  # RGB
                 gray = np.mean(image, axis=2)
-            elif image.shape[-1] == 1:  
+            elif image.shape[-1] == 1:  # Grayscale with channel
                 gray = image.squeeze(-1)
-            else:  
+            else:  # Channel first
                 gray = np.mean(image, axis=2)
         elif len(image.shape) == 2:
             gray = image
         elif len(image.shape) == 1:
-
+            # Attempt to reshape 1D to 2D
             total_pixels = image.shape[0]
             side_length = int(np.sqrt(total_pixels))
             if side_length * side_length == total_pixels:
                 gray = image.reshape(side_length, side_length)
             else:
-
+                # Common image sizes
                 if total_pixels == 784:
                     gray = image.reshape(28, 28)
                 elif total_pixels == 1024:
                     gray = image.reshape(32, 32)
                 else:
-                    return 0.0 
+                    return 0.0  # Cannot process
         else:
-            return 0.0  
+            return 0.0  # Invalid shape
         
-
+        # Ensure we have a 2D array
         if len(gray.shape) != 2:
             return 0.0
         
         h, w = gray.shape
         
-
+        # Need at least 3x3 for Laplacian
         if h < 3 or w < 3:
             return 0.0
         
-
+        # Laplacian kernel
         laplacian = np.array([[0, 1, 0], [1, -4, 1], [0, 1, 0]])
         
-
+        # Apply Laplacian manually (avoid dependency on scipy)
         result = 0
         for i in range(1, h-1):
             for j in range(1, w-1):
@@ -1000,7 +1018,7 @@ def calculate_image_sharpness(image: np.ndarray) -> float:
         return result / ((h-2) * (w-2))
         
     except Exception as e:
-
+        # Return 0 if calculation fails
         return 0.0
 
 def calculate_traversal_smoothness(images: List[np.ndarray]) -> float:
@@ -1013,7 +1031,7 @@ def calculate_traversal_smoothness(images: List[np.ndarray]) -> float:
         diff = np.mean(np.abs(images[i] - images[i-1]))
         differences.append(diff)
     
-  
+    # Smoothness is inversely related to variance in differences
     smoothness = 1.0 / (1.0 + np.var(differences))
     return smoothness
 
@@ -1022,14 +1040,14 @@ def render_real_quality_analysis(images: Dict, quality_scores: Dict, available_b
     st.markdown("---")
     st.markdown("#### 📊 Your Models' Performance Analysis")
     
-
+    # Create quality comparison plot
     fig = go.Figure()
     
     betas = sorted(images.keys())
     qualities = [quality_scores[beta] for beta in betas]
     organization_scores = [min(beta * 15, 95) for beta in betas]
     
-
+    # Add quality trace
     fig.add_trace(go.Scatter(
         x=betas,
         y=qualities,
@@ -1039,7 +1057,7 @@ def render_real_quality_analysis(images: Dict, quality_scores: Dict, available_b
         marker=dict(size=10)
     ))
     
-   
+   # Add expected organization trace
     fig.add_trace(go.Scatter(
         x=betas,
         y=organization_scores,
@@ -1049,7 +1067,7 @@ def render_real_quality_analysis(images: Dict, quality_scores: Dict, available_b
         marker=dict(size=10)
     ))
     
-
+    # Highlight current model
     if current_beta in quality_scores:
         fig.add_trace(go.Scatter(
             x=[current_beta, current_beta],
@@ -1070,7 +1088,7 @@ def render_real_quality_analysis(images: Dict, quality_scores: Dict, available_b
     
     st.plotly_chart(fig, use_container_width=True)
     
-
+    # Analysis summary
     best_quality_beta = max(quality_scores.keys(), key=lambda k: quality_scores[k])
     highest_beta = max(betas)
     
@@ -1079,7 +1097,7 @@ def render_real_quality_analysis(images: Dict, quality_scores: Dict, available_b
     - **Best Image Quality:** β = {best_quality_beta} (score: {quality_scores[best_quality_beta]:.1f})
     - **Most Organized:** β = {highest_beta} (expected organization: {min(highest_beta * 15, 95):.0f}%)
     - **Trade-off Visible:** {'✅ Yes' if best_quality_beta < highest_beta else '❓ Unclear'} - Lower β gives better quality
-    - **Your Choice:** β = {current_beta} balances quality ({quality_scores.get(current_beta, 'N/A')}) and organization
+    - **Your Choice:** β = {current_beta} balances quality ({f"{quality_scores.get(current_beta):.2f}" if quality_scores.get(current_beta) is not None else "N/A"}) and organization
     """)
 
 def render_dimension_analysis_section(model, analysis_engine: AnalysisEngine):
@@ -1093,7 +1111,7 @@ def render_dimension_analysis_section(model, analysis_engine: AnalysisEngine):
     </div>
     """, unsafe_allow_html=True)
     
-
+    # Analysis mode selection
     analysis_mode = st.selectbox(
         "Which type of analysis?",
         ["Comprehensive Grid (All Key Knobs)", "Individual Knob Focus"],
@@ -1169,10 +1187,10 @@ def generate_comprehensive_grid_analysis(analysis_engine: AnalysisEngine, num_di
                 
                 results[f"dimension_{dim}"] = result
                 
-                
+                # Display results for this dimension
                 st.markdown(f"**Knob {dim} Analysis:**")
                 
-
+                # Interpret effect strength
                 effect_strength = result.metadata.get('effect_strength', 0)
                 if effect_strength > 0.015:
                     category = "Strong Effect (Likely Disentangled)"
@@ -1186,7 +1204,7 @@ def generate_comprehensive_grid_analysis(analysis_engine: AnalysisEngine, num_di
                 
                 st.markdown(f"{color} **{category}** - Effect Strength: {effect_strength:.4f}")
                 
-
+                # Display image grid
                 if result.images and hasattr(VisualizationComponent, 'render_image_grid'):
                     VisualizationComponent.render_image_grid(
                         result.images,
@@ -1195,7 +1213,7 @@ def generate_comprehensive_grid_analysis(analysis_engine: AnalysisEngine, num_di
                         figsize=(len(result.images) * 1.2, 1.5)
                     )
                 else:
-                    
+                    # Fallback to streamlit columns
                     cols = st.columns(len(result.images))
                     for i, (img, val) in enumerate(zip(result.images, result.values)):
                         with cols[i]:
@@ -1203,10 +1221,9 @@ def generate_comprehensive_grid_analysis(analysis_engine: AnalysisEngine, num_di
                 
                 st.markdown("---")
             
-
             st.success(f"✅ Analysis complete for {num_dims} knobs!")
             
-           
+            # Display summary metrics if available
             if hasattr(MetricsDisplayComponent, 'render_analysis_metrics'):
                 MetricsDisplayComponent.render_analysis_metrics(results)
             
